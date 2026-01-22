@@ -5,80 +5,227 @@
 
 {% block content %}
 <div class="container">
-  <h1>🍽️ Saisie des repas</h1>
-
-  <div class="module-card">
-    <div class="module-card__header">
-      <h2 class="module-card__title">Informations générales</h2>
+    <div class="page-header">
+        <h2 class="page-title">🍽️ Saisie Données Alimentation</h2>
+        <a href="{% url 'alimentation:list' %}" class="btn btn--secondary">
+            ← Retour à la liste
+        </a>
     </div>
-    <form method="post">
-      {% csrf_token %}
 
-      <div class="form-group">
-        <label class="form-label" for="{{ form.year.id_for_label }}">Année</label>
-        {{ form.year }}
-      </div>
+    <div class="form-card">
+        <div class="form-card__header">
+            <h3>📊 Saisie annuelle des repas</h3>
+            <p class="form-card__description">
+                Renseignez le nombre de repas servis par type pour l'année et le service concerné.
+            </p>
+        </div>
 
-      <div class="form-group">
-        <label class="form-label" for="{{ form.service.id_for_label }}">Service</label>
-        {{ form.service }}
-      </div>
+        <form method="post" class="food-form">
+            {% csrf_token %}
 
-      <h2>Nombre de repas sur l'année</h2>
+            {% if form.non_field_errors %}
+            <div class="alert alert--error">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
 
-      <div class="form-group">
-        <label class="form-label">Bœuf / veau</label>
-        {{ form.beef_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.beef }} kg CO₂e / repas
-        </p>
-      </div>
+            <!-- General Info Section -->
+            <div class="form-section-title">Informations générales</div>
+            
+            <div class="form-group">
+                <label class="form-label" for="{{ form.year.id_for_label }}">Année</label>
+                {{ form.year }}
+                {% if form.year.errors %}<div class="form-error">{{ form.year.errors }}</div>{% endif %}
+            </div>
 
-      <div class="form-group">
-        <label class="form-label">Porc</label>
-        {{ form.pork_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.pork }} kg CO₂e / repas
-        </p>
-      </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.service.id_for_label }}">Service</label>
+                {{ form.service }}
+                {% if form.service.errors %}<div class="form-error">{{ form.service.errors }}</div>{% endif %}
+            </div>
 
-      <div class="form-group">
-        <label class="form-label">Poisson / volaille</label>
-        {{ form.poultry_fish_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.poultry_fish }} kg CO₂e / repas
-        </p>
-      </div>
+            <!-- Meals Section -->
+            <div class="form-section-title">Détail des repas</div>
 
-      <div class="form-group">
-        <label class="form-label">Végétarien</label>
-        {{ form.vegetarian_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.vegetarian }} kg CO₂e / repas
-        </p>
-      </div>
+            {% for field in form %}
+                {% if field.name not in "year service" %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    
+                    {% comment %} Display Factor Helper Text {% endcomment %}
+                    {% if field.name == 'beef_meals' and factors.beef %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.beef }} kg CO₂e / repas</p>
+                    {% elif field.name == 'pork_meals' and factors.pork %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.pork }} kg CO₂e / repas</p>
+                    {% elif field.name == 'poultry_fish_meals' and factors.poultry_fish %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.poultry_fish }} kg CO₂e / repas</p>
+                    {% elif field.name == 'vegetarian_meals' and factors.vegetarian %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.vegetarian }} kg CO₂e / repas</p>
+                    {% elif field.name == 'picnic_no_meat_meals' and factors.picnic_veg %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.picnic_veg }} kg CO₂e / repas</p>
+                    {% elif field.name == 'picnic_meat_meals' and factors.picnic_meat %}
+                        <p class="form-help"><span class="form-help__icon">ℹ️</span> Facteur : {{ factors.picnic_meat }} kg CO₂e / repas</p>
+                    {% endif %}
 
-      <div class="form-group">
-        <label class="form-label">Pique-nique sans viande</label>
-        {{ form.picnic_no_meat_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.picnic_veg }} kg CO₂e / repas
-        </p>
-      </div>
+                    {% if field.errors %}
+                    <div class="form-error">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
 
-      <div class="form-group">
-        <label class="form-label">Pique-nique avec viande</label>
-        {{ form.picnic_meat_meals }}
-        <p class="help-text">
-          Facteur ADEME : {{ factors.picnic_meat }} kg CO₂e / repas
-        </p>
-      </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary btn--large">
+                    💾 Enregistrer
+                </button>
+                <a href="{% url 'alimentation:list' %}" class="btn btn--secondary">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
 
-      <div class="module-card__actions">
-        <a href="{% url 'alimentation:list' %}" class="btn btn--secondary">Annuler</a>
-        <button type="submit" class="btn btn--primary">Sauvegarder</button>
-      </div>
-    </form>
-  </div>
+    <!-- Factors Info Box -->
+    <div class="info-box">
+        <h4>📖 Facteurs d'émission utilisés</h4>
+        <table class="factors-table">
+            <thead>
+                <tr>
+                    <th>Type de repas</th>
+                    <th>Facteur (kgCO₂e/repas)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for code, val in factors.items %}
+                <tr>
+                    <td>{{ code }}</td>
+                    <td>{{ val }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Reusing variables and styles from vehicles module pattern */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+    }
+    .page-title {
+        font-size: 1.75rem;
+        color: var(--primary);
+        margin: 0;
+    }
+    .form-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    .form-card__header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .form-card__header h3 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    .form-card__description {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+    .form-section-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px dashed var(--border);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+    .form-help {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .form-help__icon { font-size: 1rem; }
+    .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+    .btn--large {
+        padding: 1rem 2rem;
+        font-size: 1.05rem;
+    }
+    .info-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary);
+    }
+    .info-box h4 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+    .factors-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .factors-table th, .factors-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+    .factors-table th {
+        background: var(--bg-main);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+    .alert--error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+    }
+</style>
 {% endblock %}

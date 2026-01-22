@@ -1,0 +1,62 @@
+[
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 1,
+    "fields": {
+      "code": "beef",
+      "label": "Bœuf / Veau",
+      "kg_co2_per_meal": "7.200",
+      "source": "ADEME Base Carbone - Moyenne"
+    }
+  },
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 2,
+    "fields": {
+      "code": "pork",
+      "label": "Porc",
+      "kg_co2_per_meal": "2.800",
+      "source": "ADEME Base Carbone - Moyenne"
+    }
+  },
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 3,
+    "fields": {
+      "code": "poultry_fish",
+      "label": "Volaille / Poisson",
+      "kg_co2_per_meal": "1.600",
+      "source": "ADEME Base Carbone - Moyenne"
+    }
+  },
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 4,
+    "fields": {
+      "code": "vegetarian",
+      "label": "Repas végétarien",
+      "kg_co2_per_meal": "0.500",
+      "source": "ADEME Base Carbone - Moyenne"
+    }
+  },
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 5,
+    "fields": {
+      "code": "picnic_veg",
+      "label": "Pique-nique (sans viande)",
+      "kg_co2_per_meal": "0.300",
+      "source": "Estimation interne"
+    }
+  },
+  {
+    "model": "alimentation.foodemissionfactor",
+    "pk": 6,
+    "fields": {
+      "code": "picnic_meat",
+      "label": "Pique-nique (avec viande)",
+      "kg_co2_per_meal": "1.200",
+      "source": "Estimation interne"
+    }
+  }
+]
