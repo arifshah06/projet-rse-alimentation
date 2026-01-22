@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saisie Données Alimentation - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>🍽️ Saisie des repas</h1>
+
+  <div class="module-card">
+    <div class="module-card__header">
+      <h2 class="module-card__title">Informations générales</h2>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.year.id_for_label }}">Année</label>
+        {{ form.year }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.service.id_for_label }}">Service</label>
+        {{ form.service }}
+      </div>
+
+      <h2>Nombre de repas sur l'année</h2>
+
+      <div class="form-group">
+        <label class="form-label">Bœuf / veau</label>
+        {{ form.beef_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.beef }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Porc</label>
+        {{ form.pork_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.pork }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Poisson / volaille</label>
+        {{ form.poultry_fish_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.poultry_fish }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Végétarien</label>
+        {{ form.vegetarian_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.vegetarian }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pique-nique sans viande</label>
+        {{ form.picnic_no_meat_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.picnic_veg }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pique-nique avec viande</label>
+        {{ form.picnic_meat_meals }}
+        <p class="help-text">
+          Facteur ADEME : {{ factors.picnic_meat }} kg CO₂e / repas
+        </p>
+      </div>
+
+      <div class="module-card__actions">
+        <a href="{% url 'alimentation:list' %}" class="btn btn--secondary">Annuler</a>
+        <button type="submit" class="btn btn--primary">Sauvegarder</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

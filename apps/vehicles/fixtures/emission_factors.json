@@ -1,0 +1,62 @@
+[
+    {
+        "model": "vehicles.emissionfactor",
+        "pk": 1,
+        "fields": {
+            "name": "Essence (SP95-SP98)",
+            "category": "fuel",
+            "subcategory": "essence",
+            "unit": "L",
+            "factor_value": "2.790000",
+            "source": "ADEME Base Carbone",
+            "source_url": "https://data.ademe.fr/data-fair/api/v1/datasets/base-carboner/raw",
+            "valid_from": "2026-01-16",
+            "is_active": true
+        }
+    },
+    {
+        "model": "vehicles.emissionfactor",
+        "pk": 2,
+        "fields": {
+            "name": "Gazole routier",
+            "category": "fuel",
+            "subcategory": "gazole",
+            "unit": "L",
+            "factor_value": "3.160000",
+            "source": "ADEME Base Carbone",
+            "source_url": "https://data.ademe.fr/data-fair/api/v1/datasets/base-carboner/raw",
+            "valid_from": "2026-01-16",
+            "is_active": true
+        }
+    },
+    {
+        "model": "vehicles.emissionfactor",
+        "pk": 3,
+        "fields": {
+            "name": "Voiture thermique",
+            "category": "vehicle_km",
+            "subcategory": "voiture_thermique",
+            "unit": "km",
+            "factor_value": "0.192000",
+            "source": "API Impact CO2 - ADEME",
+            "source_url": "https://impactco2.fr/api/v1/transport",
+            "valid_from": "2026-01-16",
+            "is_active": true
+        }
+    },
+    {
+        "model": "vehicles.emissionfactor",
+        "pk": 4,
+        "fields": {
+            "name": "Voiture électrique",
+            "category": "vehicle_km",
+            "subcategory": "voiture_electrique",
+            "unit": "km",
+            "factor_value": "0.019800",
+            "source": "API Impact CO2 - ADEME",
+            "source_url": "https://impactco2.fr/api/v1/transport",
+            "valid_from": "2026-01-16",
+            "is_active": true
+        }
+    }
+]

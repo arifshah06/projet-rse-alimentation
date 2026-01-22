@@ -1,0 +1,16 @@
+# Development dependencies
+-r requirements.txt
+
+# Testing
+pytest==8.3.4
+pytest-django==4.9.0
+pytest-cov==6.0.0
+
+# Code quality
+black==25.1.0
+ruff==0.8.8
+mypy==1.14.0
+
+# Django extensions
+django-debug-toolbar==4.5.0
+django-extensions==3.2.3

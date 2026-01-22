@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bilan Carbone - Évry{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <h1 class="header__title">🌱 Bilan Carbone - Évry</h1>
+                <div class="header__user">
+                    <span class="header__user-name">👤 {{ user.get_full_name|default:user.username }}</span>
+                    <a href="{% url 'logout' %}" class="header__logout">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer__text">
+                Mairie d'Évry-Courcouronnes - Bilan Carbone 2024
+            </p>
+            <p class="footer__text footer__text--small">
+                Données : ADEME Base Carbone® | Éco-conçu avec ❤️
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

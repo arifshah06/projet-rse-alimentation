@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2 class="page-title">🚗 Détail de la donnée</h2>
+        <a href="{% url 'vehicle_list' %}" class="btn btn--secondary">
+            ← Retour à la liste
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-section">
+            <h3 class="detail-section__title">📋 Informations générales</h3>
+            <dl class="detail-list">
+                <dt>Année</dt>
+                <dd>{{ vehicle_data.year }}</dd>
+
+                <dt>Service / Direction</dt>
+                <dd>{{ vehicle_data.service|default:"Non renseigné" }}</dd>
+
+                <dt>Méthode de calcul</dt>
+                <dd>
+                    {% if vehicle_data.calculation_method == 'fuel' %}
+                    <span class="badge badge--fuel">⛽ Par carburant</span>
+                    {% else %}
+                    <span class="badge badge--distance">📏 Par distance</span>
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="detail-section__title">📊 Données de consommation</h3>
+            {% if vehicle_data.calculation_method == 'fuel' %}
+            <dl class="detail-list">
+                {% if vehicle_data.essence_liters %}
+                <dt>Essence (SP95-SP98)</dt>
+                <dd>{{ vehicle_data.essence_liters }} litres</dd>
+
+                <dt>CO₂ Essence</dt>
+                <dd class="highlight">{{ vehicle_data.essence_co2_kg|floatformat:2 }} kg CO₂e</dd>
+                {% endif %}
+
+                {% if vehicle_data.gazole_liters %}
+                <dt>Gazole routier</dt>
+                <dd>{{ vehicle_data.gazole_liters }} litres</dd>
+
+                <dt>CO₂ Gazole</dt>
+                <dd class="highlight">{{ vehicle_data.gazole_co2_kg|floatformat:2 }} kg CO₂e</dd>
+                {% endif %}
+            </dl>
+            {% else %}
+            <dl class="detail-list">
+                <dt>Distance parcourue</dt>
+                <dd>{{ vehicle_data.distance_km }} km</dd>
+            </dl>
+            {% endif %}
+        </div>
+
+        <div class="detail-section detail-section--highlight">
+            <h3 class="detail-section__title">🌍 Impact carbone total</h3>
+            <p class="impact-value">{{ vehicle_data.total_co2_kg|floatformat:2 }} kg CO₂e</p>
+            <p class="impact-subtext">≈ {{ vehicle_data.total_co2_tonnes|floatformat:3 }} tonne(s) CO₂e</p>
+        </div>
+
+        {% if vehicle_data.notes %}
+        <div class="detail-section">
+            <h3 class="detail-section__title">📝 Notes</h3>
+            <p class="notes-content">{{ vehicle_data.notes }}</p>
+        </div>
+        {% endif %}
+
+        <div class="detail-section detail-section--meta">
+            <dl class="detail-list detail-list--small">
+                <dt>Créé le</dt>
+                <dd>{{ vehicle_data.created_at|date:"d/m/Y à H:i" }}</dd>
+
+                <dt>Modifié le</dt>
+                <dd>{{ vehicle_data.updated_at|date:"d/m/Y à H:i" }}</dd>
+
+                <dt>Par</dt>
+                <dd>{{ vehicle_data.user.get_full_name|default:vehicle_data.user.username }}</dd>
+            </dl>
+        </div>
+
+        <div class="detail-actions">
+            <a href="{% url 'vehicle_delete' vehicle_data.pk %}" class="btn btn--secondary">
+                🗑️ Supprimer
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .detail-section {
+        padding: 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .detail-section:last-child {
+        border-bottom: none;
+    }
+
+    .detail-section--highlight {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        text-align: center;
+    }
+
+    .detail-section--meta {
+        background: var(--bg-main);
+    }
+
+    .detail-section__title {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.125rem;
+    }
+
+    .detail-section--highlight .detail-section__title {
+        color: white;
+    }
+
+    .detail-list {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 1rem;
+    }
+
+    .detail-list--small {
+        font-size: 0.875rem;
+    }
+
+    .detail-list dt {
+        font-weight: 600;
+        color: var(--text-light);
+    }
+
+    .detail-list dd {
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .detail-list .highlight {
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .impact-value {
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+
+    .impact-subtext {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .notes-content {
+        background: var(--bg-main);
+        padding: 1rem;
+        border-radius: 4px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .detail-actions {
+        padding: 1.5rem 2rem;
+        background: var(--bg-main);
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge--fuel {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .badge--distance {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    @media (max-width: 768px) {
+        .detail-list {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .detail-list dt {
+            margin-top: 1rem;
+        }
+
+        .detail-list dt:first-child {
+            margin-top: 0;
+        }
+    }
+</style>
+{% endblock %}

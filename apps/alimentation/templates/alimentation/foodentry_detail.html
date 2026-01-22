@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h1>Détail alimentation - {{ entry.service }} ({{ entry.year }})</h1>
+
+  <ul>
+    <li>Bœuf / veau : {{ entry.beef_meals }} repas</li>
+    <li>Porc : {{ entry.pork_meals }} repas</li>
+    <li>Poulet / poisson : {{ entry.poultry_fish_meals }} repas</li>
+    <li>Végétarien : {{ entry.vegetarian_meals }} repas</li>
+    <li>Pique-nique sans viande : {{ entry.picnic_no_meat_meals }} repas</li>
+    <li>Pique-nique avec viande : {{ entry.picnic_meat_meals }} repas</li>
+  </ul>
+
+  <p><strong>Impact total :</strong> {{ entry.total_co2_kg }} kg CO₂e</p>
+</div>
+{% endblock %}

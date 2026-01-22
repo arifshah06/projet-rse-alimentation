@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2 class="login-title">🌱 Bilan Carbone</h2>
+            <p class="login-subtitle">Mairie d'Évry-Courcouronnes</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert--{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}" class="login-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username" class="form-label">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" class="form-input" required autofocus
+                    placeholder="Votre nom d'utilisateur">
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" id="password" name="password" class="form-input" required
+                    placeholder="Votre mot de passe">
+            </div>
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <button type="submit" class="btn btn--primary btn--block">
+                Se connecter
+            </button>
+        </form>
+
+        <div class="login-help">
+            <p class="login-help__text">
+                <strong>🧪 Compte de test :</strong><br>
+                Utilisateur : <code>agent_test</code><br>
+                Mot de passe : <code>test1234</code>
+            </p>
+            <p class="login-help__text">
+                <strong>👨‍💼 Compte admin :</strong><br>
+                Utilisateur : <code>admin</code><br>
+                Mot de passe : <code>admin123</code>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        max-width: 420px;
+        width: 100%;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+        color: var(--primary, #2d6a4f);
+        margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+        color: var(--text-light, #6c757d);
+        font-size: 0.9rem;
+    }
+
+    .login-form {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn--block {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .login-help {
+        border-top: 1px solid #dee2e6;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .login-help__text {
+        font-size: 0.85rem;
+        color: var(--text-light, #6c757d);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .login-help code {
+        background: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        color: #2d6a4f;
+    }
+
+    .messages {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .alert--error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+    }
+
+    .alert--success {
+        background-color: #d1e7dd;
+        border: 1px solid #badbcc;
+        color: #0f5132;
+    }
+</style>
+{% endblock %}

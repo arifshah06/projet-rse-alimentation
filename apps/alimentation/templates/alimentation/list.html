@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Données Alimentation - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>🍽️ Données Alimentation</h1>
+
+  <div class="module-card">
+    <div class="module-card__header">
+      <h2 class="module-card__title">Synthèse</h2>
+    </div>
+    <div class="module-card__body">
+      <p><strong>{{ count }}</strong> donnée(s) enregistrée(s)</p>
+      <p><strong>{{ total_co2|floatformat:2 }}</strong> kg CO₂e</p>
+      <p>≈ {% widthratio total_co2 1000 1 %} tonne(s) CO₂e</p>
+    </div>
+    <div class="module-card__actions">
+      <a href="{% url 'alimentation:create' %}" class="btn btn--primary">➕ Nouvelle saisie</a>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 2rem;">Détails par service</h2>
+
+  {% if entries %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Année</th>
+          <th>Service</th>
+          <th>Bœuf/Veau</th>
+          <th>Porc</th>
+          <th>Poisson/Volaille</th>
+          <th>Végétarien</th>
+          <th>Pique-nique sans viande</th>
+          <th>Pique-nique viande</th>
+          <th>CO₂ (kg)</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+          <tr>
+            <td>{{ e.year }}</td>
+            <td>{{ e.service|default:"—" }}</td>
+            <td>{{ e.beef_meals }}</td>
+            <td>{{ e.pork_meals }}</td>
+            <td>{{ e.poultry_fish_meals }}</td>
+            <td>{{ e.vegetarian_meals }}</td>
+            <td>{{ e.picnic_no_meat_meals }}</td>
+            <td>{{ e.picnic_meat_meals }}</td>
+            <td>{{ e.total_co2_kg|floatformat:2 }}</td>
+            <td>{{ e.created_at|date:"d/m/Y" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Commencez par saisir vos premières données alimentation.</p>
+    <a href="{% url 'alimentation:create' %}" class="btn btn--primary">
+      ➕ Créer ma première saisie
+    </a>
+  {% endif %}
+</div>
+{% endblock %}

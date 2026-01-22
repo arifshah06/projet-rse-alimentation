@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Données Véhicules - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">🚗 Mes Données Véhicules</h2>
+            <p class="page-subtitle">{{ count }} donnée(s) enregistrée(s)</p>
+        </div>
+        <a href="{% url 'vehicle_form' %}" class="btn btn--primary">
+            ➕ Nouvelle saisie
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert--{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if vehicle_data %}
+    <!-- Total CO2 card -->
+    <div class="total-card">
+        <div class="total-card__icon">🌍</div>
+        <div class="total-card__content">
+            <h3 class="total-card__label">Impact carbone total</h3>
+            <p class="total-card__value">{{ total_co2|floatformat:2 }} kg CO₂e</p>
+            <p class="total-card__subtext">≈ {% widthratio total_co2 1000 1 %} tonne(s) CO₂e
+        </div>
+    </div>
+
+    <!-- Data table -->
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Année</th>
+                    <th>Service</th>
+                    <th>Méthode</th>
+                    <th>Détails</th>
+                    <th>CO₂ (kg)</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in vehicle_data %}
+                <tr class="data-row">
+                    <td class="data-cell data-cell--bold">{{ data.year }}</td>
+                    <td class="data-cell">{{ data.service|default:"—" }}</td>
+                    <td class="data-cell">
+                        {% if data.calculation_method == 'fuel' %}
+                        <span class="badge badge--fuel">⛽ Carburant</span>
+                        {% else %}
+                        <span class="badge badge--distance">📏 Distance</span>
+                        {% endif %}
+                    </td>
+                    <td class="data-cell">
+                        {% if data.calculation_method == 'fuel' %}
+                        {% if data.essence_liters %}Essence: {{ data.essence_liters }} L<br>{% endif %}
+                        {% if data.gazole_liters %}Gazole: {{ data.gazole_liters }} L{% endif %}
+                        {% else %}
+                        Distance: {{ data.distance_km }} km
+                        {% endif %}
+                    </td>
+                    <td class="data-cell data-cell--highlight">
+                        {{ data.total_co2_kg|floatformat:2 }}
+                    </td>
+                    <td class="data-cell data-cell--small">
+                        {{ data.created_at|date:"d/m/Y" }}
+                    </td>
+                    <td class="data-cell">
+                        <div class="action-buttons">
+                            <a href="{% url 'vehicle_detail' data.pk %}" class="btn-icon" title="Voir">
+                                👁️
+                            </a>
+                            <a href="{% url 'vehicle_delete' data.pk %}" class="btn-icon btn-icon--danger"
+                                title="Supprimer">
+                                🗑️
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <!-- Empty state -->
+    <div class="empty-state">
+        <div class="empty-state__icon">📊</div>
+        <h3 class="empty-state__title">Aucune donnée enregistrée</h3>
+        <p class="empty-state__description">
+            Commencez par saisir vos premières données véhicules
+        </p>
+        <a href="{% url 'vehicle_form' %}" class="btn btn--primary btn--large">
+            ➕ Créer ma première saisie
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Info section -->
+    <div class="info-section">
+        <h4>💡 Comment ça marche ?</h4>
+        <ul>
+            <li><strong>Par carburant</strong> : Saisissez vos consommations d'essence et/ou de gazole</li>
+            <li><strong>Par distance</strong> : Saisissez la distance totale parcourue</li>
+            <li>Les calculs utilisent les <strong>facteurs ADEME officiels</strong> vérifiés en janvier 2026</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .page-subtitle {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    .total-card {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 8px rgba(45, 106, 79, 0.2);
+    }
+
+    .total-card__icon {
+        font-size: 3rem;
+    }
+
+    .total-card__label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+
+    .total-card__value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+    }
+
+    .total-card__subtext {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .data-table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        background: var(--bg-main);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        border-bottom: 2px solid var(--border);
+    }
+
+    .data-row:hover {
+        background: #f8f9fa;
+    }
+
+    .data-cell {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .data-cell--bold {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .data-cell--highlight {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+
+    .data-cell--small {
+        font-size: 0.875rem;
+        color: var(--text-light);
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge--fuel {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .badge--distance {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-icon {
+        display: inline-block;
+        padding: 0.5rem;
+        border-radius: 4px;
+        background: var(--bg-main);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background: var(--primary);
+        transform: scale(1.1);
+    }
+
+    .btn-icon--danger:hover {
+        background: #dc3545;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state__icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state__title {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state__description {
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+
+    .messages {
+        margin-bottom: 1.5rem;
+    }
+
+    .alert--success {
+        background-color: #d1e7dd;
+        border: 1px solid #badbcc;
+        color: #0f5132;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .info-section h4 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .info-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .info-section li {
+        margin-bottom: 0.75rem;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+
+    .info-section li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            font-size: 0.875rem;
+        }
+
+        .data-cell {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}

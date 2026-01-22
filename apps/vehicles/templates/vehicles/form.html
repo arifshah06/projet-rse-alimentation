@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saisie Données Véhicules - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2 class="page-title">🚗 Saisie Données Véhicules</h2>
+        <a href="{% url 'vehicle_list' %}" class="btn btn--secondary">
+            ← Retour à la liste
+        </a>
+    </div>
+
+    <!-- Method selector -->
+    <div class="method-selector">
+        <p class="method-selector__label">Méthode de saisie :</p>
+        <div class="method-selector__buttons">
+            <a href="?method=fuel" class="method-btn {% if method == 'fuel' %}method-btn--active{% endif %}">
+                ⛽ Par carburant
+            </a>
+            <a href="?method=distance" class="method-btn {% if method == 'distance' %}method-btn--active{% endif %}">
+                📏 Par distance
+            </a>
+        </div>
+    </div>
+
+    <!-- Form card -->
+    <div class="form-card">
+        {% if method == 'fuel' %}
+        <div class="form-card__header">
+            <h3>📊 Saisie par consommation de carburant</h3>
+            <p class="form-card__description">
+                Renseignez les consommations d'essence et/ou de gazole de votre service
+            </p>
+        </div>
+        {% else %}
+        <div class="form-card__header">
+            <h3>📏 Saisie par distance parcourue</h3>
+            <p class="form-card__description">
+                Renseignez la distance totale parcourue par les véhicules de votre service
+            </p>
+        </div>
+        {% endif %}
+
+        <form method="post" class="vehicle-form" id="vehicleForm">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert--error">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            {% for field in form %}
+            <div class="form-group {% if field.errors %}form-group--error{% endif %}">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="required">*</span>{% endif %}
+                </label>
+
+                {{ field }}
+
+                {% if field.help_text %}
+                <p class="form-help">
+                    <span class="form-help__icon">ℹ️</span>
+                    {{ field.help_text }}
+                </p>
+                {% endif %}
+
+                {% if field.errors %}
+                <div class="form-error">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn--primary btn--large">
+                    💾 Enregistrer
+                </button>
+                <a href="{% url 'vehicle_list' %}" class="btn btn--secondary">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info section -->
+    <div class="info-box">
+        <h4>📖 Facteurs d'émission ADEME utilisés</h4>
+        <table class="factors-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Facteur</th>
+                    <th>Unité</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for factor in emission_factors %}
+                <tr>
+                    <td>{{ factor.name }}</td>
+                    <td>{{ factor.factor_value }}</td>
+                    <td>kg CO₂e/{{ factor.unit }}</td>
+                    <td>{{ factor.source }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .method-selector {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .method-selector__label {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+
+    .method-selector__buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .method-btn {
+        flex: 1;
+        padding: 1rem;
+        background: var(--bg-main);
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .method-btn:hover {
+        border-color: var(--primary);
+        background: white;
+    }
+
+    .method-btn--active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .form-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .form-card__header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .form-card__header h3 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-card__description {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group--error .form-input {
+        border-color: #dc3545;
+    }
+
+    .required {
+        color: #dc3545;
+        margin-left: 0.25rem;
+    }
+
+    .form-help {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-help__icon {
+        font-size: 1rem;
+    }
+
+    .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn--large {
+        padding: 1rem 2rem;
+        font-size: 1.05rem;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .info-box h4 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .factors-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .factors-table th,
+    .factors-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .factors-table th {
+        background: var(--bg-main);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .factors-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .factors-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert--error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .method-selector__buttons {
+            flex-direction: column;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .factors-table {
+            font-size: 0.875rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord - Bilan Carbone{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-welcome">
+        <h2 class="dashboard-title">Bonjour {{ user.get_full_name|default:user.username }} 👋</h2>
+        <p class="dashboard-subtitle">Bienvenue sur l'application de bilan carbone municipal</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card__icon">📊</div>
+            <div class="stat-card__content">
+                <h3 class="stat-card__title">Progression globale</h3>
+                <p class="stat-card__value">0%</p>
+                <p class="stat-card__label">Aucune donnée saisie</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card__icon">🚗</div>
+            <div class="stat-card__content">
+                <h3 class="stat-card__title">Véhicules</h3>
+                <p class="stat-card__value">{{ vehicle_count }}</p>
+                <p class="stat-card__label">donnée(s) saisie(s)</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card__icon">⚡</div>
+            <div class="stat-card__content">
+                <h 3 class="stat-card__title">Facteurs ADEME</h3>
+                    <p class="stat-card__value">{{ emission_factors_count }}</p>
+                    <p class="stat-card__label">facteur(s) chargé(s)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modules-grid">
+        <div class="module-card">
+            <div class="module-card__header">
+                <span class="module-card__icon">🚗</span>
+                <h3 class="module-card__title">Véhicules</h3>
+            </div>
+            <p class="module-card__description">
+                Saisie des consommations de carburant de la flotte municipale
+            </p>
+            <div class="module-card__stats">
+                <span class="module-card__badge module-card__badge--info">En cours de développement</span>
+            </div>
+            <div class="module-card__actions">
+                <a href="{% url 'vehicle_form' %}" class="btn btn--primary">
+                    📝 Saisir des données
+                </a>
+                <a href="{% url 'vehicle_list' %}" class="btn btn--secondary">
+                    👁️ Voir les données
+                </a>
+            </div>
+        </div>
+
+        <div class="module-card module-card--disabled">
+            <div class="module-card__header">
+                <span class="module-card__icon">🏢</span>
+                <h3 class="module-card__title">Bâtiments & Énergies</h3>
+            </div>
+            <p class="module-card__description">
+                Consommations énergétiques des bâtiments municipaux
+            </p>
+            <div class="module-card__stats">
+                <span class="module-card__badge module-card__badge--disabled">À venir</span>
+            </div>
+        </div>
+
+        <div class="module-card">
+            <div class="module-card__header">
+                <span class="module-card__icon">🍽️</span>
+                <h3 class="module-card__title">Alimentation</h3>
+            </div>
+            <p class="module-card__description">
+                Impact carbone de la restauration collective
+            </p>
+            <div class="module-card__actions">
+                <a href="{% url 'alimentation:create' %}" class="btn btn--primary">
+                    📝 Saisir des données
+                </a>
+                <a href="{% url 'alimentation:list' %}" class="btn btn--secondary">
+                    👁️ Voir les données
+                </a>
+            </div>
+        </div>
+
+        <div class="module-card module-card--disabled">
+            <div class="module-card__header">
+                <span class="module-card__icon">🛒</span>
+                <h3 class="module-card__title">Achats</h3>
+            </div>
+            <p class="module-card__description">
+                Marchés publics et achats de fournitures
+            </p>
+            <div class="module-card__stats">
+                <span class="module-card__badge module-card__badge--disabled">À venir</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>📚 Informations utiles</h3>
+        <ul>
+            <li><strong>Facteurs ADEME</strong> : Les calculs utilisent les facteurs officiels de la Base Carbone® ADEME
+                (vérifiés janvier 2026)</li>
+            <li><strong>Django Admin</strong> : Accédez à <a href="{% url 'admin:index' %}">l'interface
+                    d'administration</a> pour gérer les données</li>
+            <li><strong>Support Python/Django</strong> : Python 3.12.11 + Django 6.0.1</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-welcome {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .dashboard-title {
+        font-size: 1.75rem;
+        color: var(--primary, #2d6a4f);
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-subtitle {
+        color: var(--text-light, #6c757d);
+        font-size: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 1rem;
+    }
+
+    .stat-card__icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-card__title {
+        font-size: 0.875rem;
+        color: var(--text-light, #6c757d);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card__value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary, #2d6a4f);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card__label {
+        font-size: 0.75rem;
+        color: var(--text-light, #6c757d);
+    }
+
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .module-card {
+        background: white;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.2s;
+    }
+
+    .module-card:not(.module-card--disabled):hover {
+        border-color: var(--primary, #2d6a4f);
+        box-shadow: 0 4px 8px rgba(45, 106, 79, 0.1);
+    }
+
+    .module-card--disabled {
+        opacity: 0.6;
+    }
+
+    .module-card__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .module-card__icon {
+        font-size: 1.75rem;
+    }
+
+    .module-card__title {
+        font-size: 1.125rem;
+        color: var(--primary, #2d6a4f);
+        margin: 0;
+    }
+
+    .module-card__description {
+        color: var(--text-light, #6c757d);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .module-card__stats {
+        margin-bottom: 1rem;
+    }
+
+    .module-card__badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .module-card__badge--info {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+
+    .module-card__badge--disabled {
+        background-color: #e9ecef;
+        color: #6c757d;
+    }
+
+    .module-card__actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .module-card__actions .btn {
+        flex: 1;
+        text-align: center;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        border-left: 4px solid var(--primary, #2d6a4f);
+        padding: 1.5rem;
+        border-radius: 4px;
+    }
+
+    .info-section h3 {
+        margin-bottom: 1rem;
+        color: var(--primary, #2d6a4f);
+    }
+
+    .info-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .info-section li {
+        margin-bottom: 0.75rem;
+        color: var(--text-dark, #212529);
+        line-height: 1.6;
+    }
+
+    .info-section a {
+        color: var(--primary, #2d6a4f);
+        text-decoration: none;
+    }
+
+    .info-section a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
